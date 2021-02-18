@@ -8,5 +8,46 @@ mongo = PyMongo(app)
 melodyCollection = mongo.db.melody
 countingCollection = mongo.db.counting
 
+@app.route('/melody/create', methods=['POST'])
+def create_melody():
+    data = request.json
+    filt = {"title": data["title"]}
+    query = melodyCollection.find_one(filt)
+    if query is not None:
+        return {"result": "This title has been used"}
+    myMelody = {
+        "type": "melody",
+        "title": data["title"],
+        "note": data["note"],
+    }
+    melodyCollection.insert_one(myMelody)
+    return {"result": "Create successfully"}
+
+@app.route('/melody/select', methods=['PATCH'])
+def select_melody_on_db():
+    # data = request.json #title name
+    mytitle = request.args.get("title")
+    filt1 = {"type": "melody", "title": mytitle}
+    query = melodyCollection.find_one(filt1)
+    if query is None:
+        return {"result": "Cannot found the melody"}
+
+    filt2 = {"type" : "selector"}
+    updated_content = {"$set": {
+        "title": query["title"],
+        "note": query["note"]
+        }}
+    melodyCollection.update_one(filt2, updated_content)
+    return {"result" : "Select successfully"}
+
+#for hardware
+@app.route('/melody/select', methods=['GET'])
+def select_melody_on_hardware():
+    query = melodyCollection.find_one({"type" : "selector"})
+    output = {
+        "note": query["note"]
+    }
+    return {"result": output}
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='3000', debug=True)
