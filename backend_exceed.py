@@ -13,7 +13,7 @@ countingCollection = mongo.db.counting
 def get_count():
     query = countingCollection.find_one_or_404()
     count = {'count': query['count']}
-    return count.values()
+    return count
 
 @app.route('/counter', methods=['PATCH'])
 def counter():
