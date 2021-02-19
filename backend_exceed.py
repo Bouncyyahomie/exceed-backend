@@ -66,6 +66,17 @@ def counter():
 
     return {'result': 'Someone is washing hand'}
 
+#ดึง list เพลงที่บรรทึกไว้
+@app.route('/melody/list', methods=['GET'])
+def get_melody_list():
+    query = melodyCollection.find({"type": "melody"})
+    output = []
+    for ele in query:
+        output.append({
+            "title": ele["title"]
+        })
+    return {"return": output}
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='3000', debug=True)
