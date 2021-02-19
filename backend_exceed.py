@@ -75,7 +75,7 @@ def get_melody_list():
         output.append({
             "title": ele["title"]
         })
-    return {"return": output}
+    return {"result": output}
 
 
 if __name__ == "__main__":
