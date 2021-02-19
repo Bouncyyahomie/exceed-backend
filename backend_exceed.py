@@ -57,7 +57,7 @@ def get_count():
 
 @app.route('/counter', methods=['PATCH'])
 def counter():
-    data = request.json
+    # data = request.json
     filt = {'type': 'washinghand'}
     getter = get_count()
     counter = getter["count"] + 1
