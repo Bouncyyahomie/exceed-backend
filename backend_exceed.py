@@ -120,6 +120,16 @@ def get_melody_list():
         })
     return {"result": output}
 
+@app.route('/melody/delete',methods=['DELETE'])
+def delete_melody():
+    mytitle = request.args.get("title")
+    filt = {"type": "melody", "title": mytitle}
+    query = melodyCollection.find_one(filt)
+    if query is None:
+        return {"result": "Cannot found the melody"}
+    melodyCollection.delete_one(query)
+    return {'result' : 'Deleted successfully'}
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='3000', debug=True)
