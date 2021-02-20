@@ -1,7 +1,9 @@
 from flask import Flask, request
 from flask_pymongo import PyMongo
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/": {"origins": "*"}})
 app.config['MONGO_URI'] = 'mongodb://exceed_group07:cn8q649p@158.108.182.0:2255/exceed_group07'
 mongo = PyMongo(app)
 
@@ -29,7 +31,10 @@ melody_note = {
     "C8": 4186, "CS8": 4435, "D8": 4699, "DS8": 4978
 }
 
+reverse_dict = dict((v,k) for k,v in melody_note.items())
+
 @app.route('/melody/create', methods=['POST'])
+@cross_origin()
 def create_melody():
     data = request.json
     filt = {"title": data["title"]}
@@ -51,6 +56,7 @@ def create_melody():
     return {"result": "Create successfully"}
 
 @app.route('/melody/select', methods=['PATCH'])
+@cross_origin()
 def select_melody_on_db():
     # data = request.json #title name
     mytitle = request.args.get("title")
@@ -69,6 +75,7 @@ def select_melody_on_db():
 
 #for hardware
 @app.route('/melody/select', methods=['GET'])
+@cross_origin()
 def select_melody_on_hardware():
     query = melodyCollection.find_one({"type" : "selector"})
     output = {
@@ -77,12 +84,14 @@ def select_melody_on_hardware():
     return {"result": output}
 
 @app.route('/count' , methods=['GET'])
+@cross_origin()
 def get_count():
     query = countingCollection.find_one_or_404()
     count = {'count': query['count']}
     return count
 
 @app.route('/counter', methods=['PATCH'])
+@cross_origin()
 def counter():
     # data = request.json
     filt = {'type': 'washinghand'}
@@ -95,12 +104,19 @@ def counter():
 
 #ดึง list เพลงที่บันทึกไว้
 @app.route('/melody/list', methods=['GET'])
+@cross_origin()
 def get_melody_list():
     query = melodyCollection.find({"type": "melody"})
     output = []
+        
     for ele in query:
+        data_note = ele["note"]
+        int_to_string = []
+        for note in data_note:
+            int_to_string.append(reverse_dict[note])
         output.append({
-            "title": ele["title"]
+            "name": ele["title"],
+            "notes": int_to_string
         })
     return {"result": output}
 
