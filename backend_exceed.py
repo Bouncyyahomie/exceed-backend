@@ -7,8 +7,8 @@ cors = CORS(app, resources={r"/": {"origins": "*"}})
 app.config['MONGO_URI'] = 'mongodb://exceed_group07:cn8q649p@158.108.182.0:2255/exceed_group07'
 mongo = PyMongo(app)
 
-melodyCollection = mongo.db.melody_test
-countingCollection = mongo.db.counting_test
+melodyCollection = mongo.db.melody
+countingCollection = mongo.db.counting
 
 melody_note = {
     "B0": 31, "C1": 33, "C-1": 35, "D1": 37, "D-1": 39,
@@ -70,7 +70,8 @@ def select_melody_on_db():
     if selector_query is None:
         mySelector = {
             "type": "selector",
-            "note": query["note"]
+            "note": query["note"],
+            "title": query["title"]
         }
         melodyCollection.insert_one(mySelector)
     else:
@@ -127,6 +128,7 @@ def get_melody_list():
     return {"result": output}
 
 @app.route('/melody/delete',methods=['DELETE'])
+@cross_origin()
 def delete_melody():
     mytitle = request.args.get("title")
     filt = {"type": "melody", "title": mytitle}
@@ -138,4 +140,4 @@ def delete_melody():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='3000', debug=True)
+    app.run(host='0.0.0.0', port='3002', debug=True)
