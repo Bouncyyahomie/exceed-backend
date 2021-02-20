@@ -1,10 +1,13 @@
 from flask import Flask, request
 from flask_pymongo import PyMongo
 from flask_cors import CORS, cross_origin
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 app = Flask(__name__)
 cors = CORS(app, resources={r"/": {"origins": "*"}})
-app.config['MONGO_URI'] = 'mongodb://exceed_group07:cn8q649p@158.108.182.0:2255/exceed_group07'
+app.config['MONGO_URI'] = os.getenv("MONGO_URI")
 mongo = PyMongo(app)
 
 melodyCollection = mongo.db.melody
@@ -28,7 +31,7 @@ melody_note = {
     "A6": 1760, "A-6": 1865, "B6": 1976, "C7": 2093, "C-7": 2217,
     "D7": 2349, "D-7": 2489, "E7": 2637, "F7": 2794, "F-7": 2960,
     "G7": 3136, "G-7": 3322, "A7": 3520, "A-7": 3729, "B7": 3951,
-    "C8": 4186, "C-8": 4435, "D8": 4699, "D-8": 4978
+    "C8": 4186, "C-8": 4435, "D8": 4699, "D-8": 4978, "_": 0
 }
 
 reverse_dict = dict((v,k) for k,v in melody_note.items())
