@@ -133,8 +133,8 @@ def delete_melody():
     query = melodyCollection.find_one(filt)
     if query is None:
         return {"result": "Cannot found the melody"}
-    melodyCollection.delete_one(query)
-    return {'result' : 'Deleted successfully'}
+    x = melodyCollection.delete_many({"title": mytitle})
+    return {'result' : f'{x.deleted_count} documents deleted.'}
 
 
 if __name__ == "__main__":
