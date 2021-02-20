@@ -7,28 +7,28 @@ cors = CORS(app, resources={r"/": {"origins": "*"}})
 app.config['MONGO_URI'] = 'mongodb://exceed_group07:cn8q649p@158.108.182.0:2255/exceed_group07'
 mongo = PyMongo(app)
 
-melodyCollection = mongo.db.melody
-countingCollection = mongo.db.counting
+melodyCollection = mongo.db.melody_test
+countingCollection = mongo.db.counting_test
 
 melody_note = {
-    "B0": 31, "C1": 33, "CS1": 35, "D1": 37, "DS1": 39,
-    "E1": 41, "F1": 44, "FS1": 46, "G1": 49, "GS1": 52,
-    "A1": 55, "AS1": 58, "B1": 62, "C2": 65, "CS2": 69,
-    "D2": 73, "DS2": 78, "E2": 82, "F2": 87, "FS2": 93,
-    "G2": 98, "GS2": 104, "A2": 110, "AS2": 117, "B2": 123,
-    "C3": 131, "CS3": 139, "D3": 147, "DS3": 156, "E3": 165,
-    "F3": 175, "FS3": 185, "G3": 196, "GS3": 208, "A3": 220,
-    "AS3": 233, "B3": 247, "C4": 262, "CS4": 277, "D4": 294,
-    "DS4": 311, "E4": 330, "F4": 349, "FS4": 370, "G4": 392,
-    "GS4": 415, "A4": 440, "AS4": 466, "B4": 494, "C5": 523,
-    "CS5": 554, "D5": 587, "DS5": 622, "E5": 659, "F5": 698,
-    "FS5": 740, "G5": 784, "GS5": 831, "A5": 880, "AS5": 932,
-    "B5": 988, "C6": 1047, "CS6": 1109, "D6": 1175, "DS6": 1245,
-    "E6": 1319, "F6": 1397, "FS6": 1480, "G6": 1568, "GS6": 1661,
-    "A6": 1760, "AS6": 1865, "B6": 1976, "C7": 2093, "CS7": 2217,
-    "D7": 2349, "DS7": 2489, "E7": 2637, "F7": 2794, "FS7": 2960,
-    "G7": 3136, "GS7": 3322, "A7": 3520, "AS7": 3729, "B7": 3951,
-    "C8": 4186, "CS8": 4435, "D8": 4699, "DS8": 4978
+    "B0": 31, "C1": 33, "C-1": 35, "D1": 37, "D-1": 39,
+    "E1": 41, "F1": 44, "F-1": 46, "G1": 49, "G-1": 52,
+    "A1": 55, "A-1": 58, "B1": 62, "C2": 65, "C-2": 69,
+    "D2": 73, "D-2": 78, "E2": 82, "F2": 87, "F-2": 93,
+    "G2": 98, "G-2": 104, "A2": 110, "A-2": 117, "B2": 123,
+    "C3": 131, "C-3": 139, "D3": 147, "D-3": 156, "E3": 165,
+    "F3": 175, "F-3": 185, "G3": 196, "G-3": 208, "A3": 220,
+    "A-3": 233, "B3": 247, "C4": 262, "C-4": 277, "D4": 294,
+    "D-4": 311, "E4": 330, "F4": 349, "F-4": 370, "G4": 392,
+    "G-4": 415, "A4": 440, "A-4": 466, "B4": 494, "C5": 523,
+    "C-5": 554, "D5": 587, "D-5": 622, "E5": 659, "F5": 698,
+    "F-5": 740, "G5": 784, "G-5": 831, "A5": 880, "A-5": 932,
+    "B5": 988, "C6": 1047, "C-6": 1109, "D6": 1175, "D-6": 1245,
+    "E6": 1319, "F6": 1397, "F-6": 1480, "G6": 1568, "G-6": 1661,
+    "A6": 1760, "A-6": 1865, "B6": 1976, "C7": 2093, "C-7": 2217,
+    "D7": 2349, "D-7": 2489, "E7": 2637, "F7": 2794, "F-7": 2960,
+    "G7": 3136, "G-7": 3322, "A7": 3520, "A-7": 3729, "B7": 3951,
+    "C8": 4186, "C-8": 4435, "D8": 4699, "D-8": 4978
 }
 
 reverse_dict = dict((v,k) for k,v in melody_note.items())
@@ -64,13 +64,21 @@ def select_melody_on_db():
     query = melodyCollection.find_one(filt1)
     if query is None:
         return {"result": "Cannot found the melody"}
-
+    
     filt2 = {"type" : "selector"}
-    updated_content = {"$set": {
-        "title": query["title"],
-        "note": query["note"]
-        }}
-    melodyCollection.update_one(filt2, updated_content)
+    selector_query = melodyCollection.find_one(filt2)
+    if selector_query is None:
+        mySelector = {
+            "type": "selector",
+            "note": query["note"]
+        }
+        melodyCollection.insert_one(mySelector)
+    else:
+        updated_content = {"$set": {
+            "title": query["title"],
+            "note": query["note"]
+            }}
+        melodyCollection.update_one(filt2, updated_content)
     return {"result" : "Select successfully"}
 
 #for hardware
@@ -78,9 +86,7 @@ def select_melody_on_db():
 @cross_origin()
 def select_melody_on_hardware():
     query = melodyCollection.find_one({"type" : "selector"})
-    output = {
-        "note": query["note"]
-    }
+    output = query["note"]
     return {"result": output}
 
 @app.route('/count' , methods=['GET'])
