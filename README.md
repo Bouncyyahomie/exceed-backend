@@ -6,16 +6,12 @@
 ```json
 {
     "title": "baby shark",
-    "note": [31, 33, 35, 37, 39, 
-             41, 33, 35, 37, 39, 
-             33, 35, 37, 39, 44,
-             33, 35, 37, 39, 58
-    ]
+    "note": ["A3", "A3",  "A3", "F3", "C4", "A3", "F3", "C4", "A3"]
 }
 ```
 - If the melody title is the same as the melody title already in the database. The melody will not create and return `{"result": "This title has been used"}`
 - If the melody created. return `{"result": "Create successfully"}`
-- Note must be an array of int (20 int)
+- Note must be an array of string (40 string)
 
 /melody/select?title=..., methods=PATCH
 - For selecting notes to play on the hardware
@@ -27,15 +23,12 @@
 ```json
 {
     "result" : 
-    {
-        "note": 
         [
             31, 33, 35, 37, 39, 
             41, 33, 35, 37, 39, 
             33, 35, 37, 39, 44,
             33, 35, 37, 39, 58
         ]
-    }
 }
 ```
 - This route **for hardware**
@@ -55,17 +48,28 @@
 - Use this route when the hardware is working
 
 /melody/list, methods=GET
-- For get all the melody title on the database
+- For get all the melody title and notes on the database
 ```json
 {
     "result" :
     [
         {
-            "title": "baby shark"
+            "name": "baby shark",
+            "notes": [740,659,0,494,554,587,554,554,587,554,440]
         },
         {
-            "title": "did that"
+            "name": "did that",
+            "notes": [31, 659, 659, 659, 31]
         }
     ]
+}
+```
+
+/melody/delete?title=..., methods=DELETE
+- For delete the melody in the database
+- If this function is working correctly, return with this format
+```json
+{
+    "result": "1 documents deleted."
 }
 ```
